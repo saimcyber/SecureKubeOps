@@ -1,0 +1,35 @@
+name: SecureKubeOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # 1. Checkout code
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # 2. Build Docker image
+    - name: Build Docker Image
+      run: docker build -t securekubeops-app .
+
+    # 3. Install Trivy
+    - name: Install Trivy
+      run: |
+        sudo apt-get install wget -y
+        wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.1_Linux-64bit.deb
+        sudo dpkg -i trivy_0.50.1_Linux-64bit.deb
+
+    # 4. Scan Docker image
+    - name: Scan Image with Trivy
+      run: trivy image securekubeops-app
+
+    # 5. Deploy (simulated for now)
+    - name: Deployment Step
+      run: echo "Deploying to Kubernetes..."
