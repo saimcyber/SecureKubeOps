@@ -19,8 +19,8 @@ spec:
     spec:
       containers:
       - name: securekubeops-container
-        image: securekubeops-app
-        imagePullPolicy: Never
+        image: saimcyber/securekubeops
+        imagePullPolicy: Always
 
         ports:
         - containerPort: 3000
