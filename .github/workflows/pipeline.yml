@@ -41,3 +41,11 @@ jobs:
     # 5. Deploy (simulated for now)
     - name: Deployment Step
       run: echo "Deploying to Kubernetes..."
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl set image deployment/securekubeops-deployment \
+        securekubeops-container=${{ secrets.DOCKER_USERNAME }}/securekubeops:latest
