@@ -44,8 +44,3 @@ jobs:
 
     - name: Set up kubectl
       uses: azure/setup-kubectl@v3
-
-    - name: Deploy to Kubernetes
-      run: |
-        kubectl set image deployment/securekubeops-deployment \
-        securekubeops-container=${{ secrets.DOCKER_USERNAME }}/securekubeops:latest
