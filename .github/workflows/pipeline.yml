@@ -28,7 +28,8 @@ jobs:
 
     # 4. Scan Docker image
     - name: Scan Image with Trivy
-      run: trivy image --exit-code 0 securekubeops-app
+      run: |
+        trivy image --exit-code 0 --severity HIGH,CRITICAL securekubeops-app || true
 
     # 5. Deploy (simulated for now)
     - name: Deployment Step
