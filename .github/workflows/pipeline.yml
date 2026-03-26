@@ -1,4 +1,4 @@
-name: SecureKubeOps Pipeline
+name: DevSecOps Pipeline
 
 on:
   push:
@@ -10,37 +10,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-    # 1. Checkout code
+    # 1. Checkout App Repo
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # 2. Build Docker image
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+    # 2. Login to Docker Hub
+    - name: Login to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
+    # 3. Build Image
     - name: Build Docker Image
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/securekubeops .
+      run: docker build -t saimcyber/securekubeops:${{ github.sha }} .
 
+    # 4. Push Image
     - name: Push Docker Image
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/securekubeops
+      run: docker push saimcyber/securekubeops:${{ github.sha }}
 
-    # 3. Scan Image with Trivy
-    - name: Scan Image with Trivy
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: ${{ secrets.DOCKER_USERNAME }}/securekubeops:latest
-        format: table
-        exit-code: 0
-        severity: HIGH,CRITICAL
+    # 5. Clone Infra Repo
+    - name: Clone Infra Repo
+      run: |
+        git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/saimcyber/securekubeops-infra.git
 
+    # 6. Update Image Tag
+    - name: Update Deployment YAML
+      run: |
+        cd securekubeops-infra
+        sed -i "s|image: .*|image: saimcyber/securekubeops:${{ github.sha }}|" deployment.yaml
 
-    # 5. Deploy (simulated for now)
-    - name: Deployment Step
-      run: echo "Deploying to Kubernetes..."
-
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v3
+    # 7. Commit & Push
+    - name: Commit and Push Changes
+      run: |
+        cd securekubeops-infra
+        git config user.name "github-actions"
+        git config user.email "actions@github.com"
+        git add .
+        git commit -m "Update image to ${{ github.sha }}" || echo "No changes to commit"
+        git push
