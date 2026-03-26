@@ -35,7 +35,7 @@ jobs:
     - name: Update Deployment YAML
       run: |
         cd securekubeops-infra
-        sed -i "s|image: .*|image: saimcyber/securekubeops:${{ github.sha }}|" deployment.yaml
+        sed -i "s|image: .*|image: saimcyber/securekubeops:${{ github.sha }}|" dev/deployment.yaml
 
     # 7. Commit & Push
     - name: Commit and Push Changes
