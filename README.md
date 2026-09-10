@@ -160,3 +160,9 @@ This project was not just about building, but also debugging real issues:
 
 **Saim Zaib**  
 Cybersecurity & DevOps Enthusiast
+
+---
+
+## 📜 License
+
+MIT — see [LICENSE](LICENSE).
